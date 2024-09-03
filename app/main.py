@@ -1,17 +1,11 @@
 # %%
 from dash import Dash, dcc, html, callback, Output, Input, State, \
-    no_update, callback_context, ctx, dash_table
+    no_update, ctx, dash_table
 import datetime
 import dash_bootstrap_components as dbc
 from sqlalchemy import create_engine, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
-import pandas as pd
 
-# def check_tbl(db, tbl):
-#     engine = create_engine(f"sqlite:///{db}")
-#     session = Session(engine)
-#     res = session.query(tbl).all()
-#     return [rec for rec in res]
 
 # %%
 def result_to_dict_list_with_headers(query_result):
@@ -83,19 +77,6 @@ class Roster(Base): # userteamlink
     def __repr__(self) -> str:
         return f"Roster(team_id={self.team_id!r}, user_id={self.user_id!r})"
 
-class Baseline(Base):
-    __tablename__ = "baselines"
-     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
-    challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"))
-    baseline_event_result: Mapped[int] # in minutes
-    baseline_event_url: Mapped[str] = mapped_column(String(150))
-    baseline_block_training_count: Mapped[int] # in training sessions
-
-    def __repr__(self) -> str:
-        return f"Baseline(user_id={self.user_id!r}, event_id={self.event_id!r})"
 
 class Target(Base):
     __tablename__ = "targets"
@@ -122,27 +103,11 @@ class Event(Base):
     url: Mapped[str] = mapped_column(String(150))
     description: Mapped[str] = mapped_column(String(150))
 
-class Prizegiving(Base):
-    __tablename__ = "prizegivings"
-     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
-    challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"))
-    event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
-    ceremony_date: Mapped[datetime.date]
-    ceremony_location: Mapped[str] = mapped_column(String(150))
-    first_prize: Mapped[str] = mapped_column(String(30))
-    second_prize: Mapped[str] = mapped_column(String(30))
-    team_prize: Mapped[str] = mapped_column(String(30))
-
-    def __repr__(self) -> str:
-        return f"Prizegiving(id={self.id!r}, challenge_id={self.challenge_id!r}, user_id={self.user_id!r})"
 
 class Training(Base):
     __tablename__ = "trainings"
      
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
     category: Mapped[str] = mapped_column(String(30))
     activity: Mapped[str] = mapped_column(String(30))
     type: Mapped[str] = mapped_column(String(30))
@@ -152,7 +117,7 @@ class Training(Base):
     target: Mapped[int]
 
     def __repr__(self) -> str:
-        return f"Training(id={self.id!r}, name={self.training_name!r}"
+        return f"Training(id={self.id!r}, name={self.activity!r}"
     
 class Challenge(Base):
     __tablename__ = "challenges"
@@ -171,19 +136,6 @@ class Challenge(Base):
     def __repr__(self) -> str:
         return f"Challenge(id={self.id!r}, challenge_name={self.name!r}, challenge_creator={self.challenge_creator!r})"
     
-class UpcomingForecast(Base):
-    __tablename__ = "upcoming_forecasts"
-     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"))
-    block_id: Mapped[int] = mapped_column(ForeignKey("blocks.id"))
-    forecast_block_training_count: Mapped[int] # in training sessions
-    prior_forecast_block_training_count: Mapped[int] # in training sessions
-    prior_forecast_achieved: Mapped[bool]
-
-    def __repr__(self) -> str:
-        return f"UpcomingForecast(user_id={self.user_id!r}, event_id={self.event_id!r})"
     
 class TrainingSession(Base):
     __tablename__ = "training_sessions"
@@ -273,7 +225,6 @@ def make_form(tbl, cols):
             [
                 dbc.Label(col, width="auto"),
                 dbc.Col(
-                    # dbc.Input(placeholder=f'enter {col}', id=f"{tbl}-{col}-input")
                     get_input_component(tbl, col)
                 )
             ]
@@ -339,7 +290,7 @@ class ModelComponents:
                     for ix, _ in enumerate(inputs):
                         try:
                             inputs[ix] = datetime.date.fromisoformat(inputs[ix])
-                        except:
+                        except ValueError:
                             pass
                     input_tbl = btn.split('-')[0]
                     tbl_obj = tbl_cls_cols[input_tbl]['object']
