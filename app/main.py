@@ -28,7 +28,7 @@ def result_to_dict_list_with_headers(query_result):
 
     # Convert each row into a dictionary
     rows = [{column: getattr(row, column) for column in column_headers} for row in query_result]
-    print(rows)
+    # print(rows)
     dash_table_columns = [{'name': c, 'id': c} for c in column_headers]
 
     return dash_table_columns, rows
