@@ -3,10 +3,7 @@ from dash import Dash, dcc, html, callback, Output, Input, State, \
     no_update, ctx, dash_table
 import datetime
 import dash_bootstrap_components as dbc
-# from sqlalchemy import create_engine, String, ForeignKey
-# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
-from model import *
-from config import models_to_load
+from data import *
 
 # %%
 def result_to_dict_list_with_headers(query_result):
@@ -39,18 +36,6 @@ def fetch_data(session, tbl):
     _, data = result_to_dict_list_with_headers(res)
     return data
 
-engine = create_engine("sqlite:///intendif.db", echo=True,
-                       connect_args={'check_same_thread': False})
-session = Session(engine)
-
-Base.metadata.create_all(engine)
-
-# %%
-tbl_cls_cols = {cls.__tablename__: {'object': cls, 'cols': cls.__table__.columns.keys()} \
-                for cls in models_to_load}
-
-tbl_cls_col_type = {cls.__tablename__: {'object': cls, 'cols': cls.__table__.columns.keys()} \
-                for cls in models_to_load}
 
 # %%
 def get_col_type(tbl, col):

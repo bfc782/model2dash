@@ -1,5 +1,7 @@
 from model import *
 
+env = 'dev'
+
 prod_models = ['User', 'Team']
 
 models_to_load = [cls for cls in Base.__subclasses__() \
