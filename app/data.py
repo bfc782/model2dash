@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from model import *
-from config import models_to_load
+from app.models import *
+from config import models_to_load, config
 
 engine = create_engine("sqlite:///intendif.db", echo=True,
                        connect_args={'check_same_thread': False})

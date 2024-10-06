@@ -3,7 +3,7 @@ from dash import Dash, dcc, html, callback, Output, Input, State, \
     no_update, ctx, dash_table
 import datetime
 import dash_bootstrap_components as dbc
-from data import *
+from .extensions import db
 
 # %%
 def result_to_dict_list_with_headers(query_result):
@@ -31,68 +31,68 @@ def result_to_dict_list_with_headers(query_result):
 
     return dash_table_columns, rows
 
-def fetch_data(session, tbl):
-    res = session.query(tbl_cls_cols[tbl]['object']).all()
-    _, data = result_to_dict_list_with_headers(res)
-    return data
-
-
 # %%
-def get_col_type(tbl, col):
-    table = Base.metadata.tables[tbl]
-    column = table.columns[col]
-    return str(column.type)
-
-def get_input_component(tbl, col):
-    col_type = get_col_type(tbl, col)
-    if col_type == 'INTEGER':
-        return dbc.Input(placeholder=f'enter {col}', id=f"{tbl}-{col}-input")
-    elif col_type == 'DATE':
-        return dcc.DatePickerSingle(
-            id=f"{tbl}-{col}-input",
-            min_date_allowed=datetime.date.today() - datetime.timedelta(days=2),
-            max_date_allowed=datetime.date.today(),
-            initial_visible_month=datetime.date.today(),
-            date=datetime.date.today()
-        )
-    else:
-        return dbc.Input(placeholder=f'enter {col}', id=f"{tbl}-{col}-input")
-
-def make_form(tbl, cols):
-    form = dbc.Form(
-        [dbc.Row(
-            [
-                dbc.Label(col, width="auto"),
-                dbc.Col(
-                    get_input_component(tbl, col)
-                )
-            ]
-        ) for ix, col in enumerate(cols)] +
-        [dbc.Row([dbc.Button(f"Submit {tbl}", id=f"{tbl}-submit-btn")])]   
-    )
-    return form
-
-def create_table_callback(tbl_name):
-    @callback(
-        Output(f'{tbl_name}-table', 'data'),
-        Input('dummy-div', 'children')
-    )
-    def get_data(_):
-        return fetch_data(session, tbl_name)
-
 class ModelComponents:
     # component_dict = {}
-    def __init__(self, model_tbl):
+    def __init__(self, db, model_tbl):
         self.model_tbl = model_tbl
+        self.db = db
 
         for ix, tbl in enumerate(model_tbl):
             setattr(self, f'{tbl}_btn', dbc.Button(tbl, id=f'{tbl}-btn'))
-            setattr(self, f'{tbl}_modal', dbc.Modal(make_form(tbl, tbl_cls_cols[tbl]['cols']), 
+            setattr(self, f'{tbl}_modal', dbc.Modal(self.make_form(tbl, self.model_tbl[tbl]['cols']), 
                                                             id=f'{tbl}-modal'))
             setattr(self, f'{tbl}_table', dash_table.DataTable(
                 id=f'{tbl}-table',
-                columns=[{'id':c, 'name':c} for c in tbl_cls_cols[tbl]['cols']],
+                columns=[{'id':c, 'name':c} for c in self.model_tbl[tbl]['cols']],
             ))
+
+    def get_col_type(self, tbl, col):
+        table = self.db.Model.metadata.tables[tbl]
+        column = table.columns[col]
+        return str(column.type)
+
+    def get_input_component(self, tbl, col):
+        col_type = self.get_col_type(tbl, col)
+        if col_type == 'INTEGER':
+            return dbc.Input(placeholder=f'enter {col}', id=f"{tbl}-{col}-input")
+        elif col_type == 'DATE':
+            return dcc.DatePickerSingle(
+                id=f"{tbl}-{col}-input",
+                min_date_allowed=datetime.date.today() - datetime.timedelta(days=2),
+                max_date_allowed=datetime.date.today(),
+                initial_visible_month=datetime.date.today(),
+                date=datetime.date.today()
+            )
+        else:
+            return dbc.Input(placeholder=f'enter {col}', id=f"{tbl}-{col}-input")
+
+    def make_form(self, tbl, cols):
+        form = dbc.Form(
+            [dbc.Row(
+                [
+                    dbc.Label(col, width="auto"),
+                    dbc.Col(
+                        self.get_input_component(tbl, col)
+                    )
+                ]
+            ) for ix, col in enumerate(cols)] +
+            [dbc.Row([dbc.Button(f"Submit {tbl}", id=f"{tbl}-submit-btn")])]   
+        )
+        return form
+
+    def fetch_data(self, session, tbl):
+        res = session.query(self.model_tbl[tbl]['object']).all()
+        _, data = result_to_dict_list_with_headers(res)
+        return data
+    
+    def create_table_callback(self, tbl_name):
+        @callback(
+            Output(f'{tbl_name}-table', 'data'),
+            Input('dummy-div', 'children')
+        )
+        def get_data(_):
+            return self.fetch_data(self.db.session, tbl_name)
 
     def get_component_callbacks(self):
         for tbl in self.model_tbl:
@@ -106,12 +106,14 @@ class ModelComponents:
                 return False
             
             @callback(
+                #TODO: add alert to modal; keep data in form; allow for retry if failure
+                # Output(f'{tbl}-modal', "children", allow_duplicate=True),
                 Output("alert", "children", allow_duplicate=True),
                 Output('dummy-div', 'children', allow_duplicate=True),
                 Input(f"{tbl}-submit-btn", "n_clicks"),
-                [[State(f'{tbl}-{col}-input', "value") if get_col_type(tbl, col) != 'DATE' \
+                [[State(f'{tbl}-{col}-input', "value") if self.get_col_type(tbl, col) != 'DATE' \
                    else State(f'{tbl}-{col}-input', "date") \
-                  for col in tbl_cls_cols[tbl]['cols']]],
+                  for col in self.model_tbl[tbl]['cols']]],
                 prevent_initial_call=True
             )
             def submit_inputs(n1, inputs):
@@ -132,46 +134,48 @@ class ModelComponents:
                         except ValueError:
                             pass
                     input_tbl = btn.split('-')[0]
-                    tbl_obj = tbl_cls_cols[input_tbl]['object']
-                    tbl_cols_k_v = {tbl_cls_cols[input_tbl]['cols'][ix]:inputs[ix] 
+                    tbl_obj = self.model_tbl[input_tbl]['object']
+                    tbl_cols_k_v = {self.model_tbl[input_tbl]['cols'][ix]:inputs[ix] 
                                     for ix, _ in enumerate(inputs)}
-                    session.add(
+                    self.db.session.add(
                         tbl_obj(
                             **tbl_cols_k_v   
                         ) 
                     )
-                    session.commit()
+                    self.db.session.commit()
                     return dbc.Alert(f"did this work? {input_tbl, inputs_txt, tbl_obj, tbl_cols_k_v}"), ''
                 else:
                     no_update
             
-            create_table_callback(tbl)
+            self.create_table_callback(tbl)
 
-# %%    
-model_components = ModelComponents(tbl_cls_cols)
-callbacks = model_components.get_component_callbacks()
 
 # %%
-app = Dash(__name__, 
-        suppress_callback_exceptions=True,
-        external_stylesheets=[dbc.themes.JOURNAL]
-        )
+def create_dash_app(flask_app, tbl_cls_cols):
+    model_components = ModelComponents(db, tbl_cls_cols)
+    callbacks = model_components.get_component_callbacks()
 
-def serve_layout():
-    return html.Div(
-                    [
-                        html.Div(id='dummy-div', children=[], hidden=True),
-                        html.Div(id="alert"),
-                        dbc.Tab(
+    dash_app = Dash(__name__,
+                    server=flask_app,
+                    # url_base_pathname='/dash/', 
+                    suppress_callback_exceptions=True,
+                    external_stylesheets=[dbc.themes.JOURNAL]
+            )
 
-                        )]
-                    + 
-                    [getattr(model_components, f'{tbl}{comp}')
-                        for tbl in tbl_cls_cols for comp in ['_btn', '_modal', '_table']
-                    ]
-                ) 
+    def serve_layout():
+        return html.Div(
+                        [
+                            html.Div(id='dummy-div', children=[], hidden=True),
+                            html.Div(id="alert"),
+                            dbc.Tab(
 
-app.layout = serve_layout
+                            )]
+                        + 
+                        [getattr(model_components, f'{tbl}{comp}')
+                            for tbl in tbl_cls_cols for comp in ['_btn', '_modal', '_table']
+                        ]
+                    ) 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    dash_app.layout = serve_layout
+
+    return dash_app

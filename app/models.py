@@ -2,10 +2,11 @@ import datetime
 from sqlalchemy import create_engine, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
-class Base(DeclarativeBase):
-    pass
+# class Base(DeclarativeBase):
+#     pass
+from app import db
 
-class User(Base):
+class User(db.Model):
     __tablename__ = "users"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -14,7 +15,7 @@ class User(Base):
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, user_name={self.user_name!r})"
     
-class Team(Base):
+class Team(db.Model):
     __tablename__ = "teams"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -29,7 +30,7 @@ class Team(Base):
 
 ### Rest of models
 
-class Roster(Base): # userteamlink
+class Roster(db.Model): # userteamlink
     __tablename__ = "rosters"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -42,7 +43,7 @@ class Roster(Base): # userteamlink
         return f"Roster(team_id={self.team_id!r}, user_id={self.user_id!r})"
 
 
-class Target(Base):
+class Target(db.Model):
     __tablename__ = "targets"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -58,7 +59,7 @@ class Target(Base):
     def __repr__(self) -> str:
         return f"Target(user_id={self.user_id!r}, event_id={self.event_id!r}, training_id={self.training_id!r})"
 
-class Event(Base):
+class Event(db.Model):
     __tablename__ = "events"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -68,7 +69,7 @@ class Event(Base):
     description: Mapped[str] = mapped_column(String(150))
 
 
-class Training(Base):
+class Training(db.Model):
     __tablename__ = "trainings"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -83,7 +84,7 @@ class Training(Base):
     def __repr__(self) -> str:
         return f"Training(id={self.id!r}, name={self.activity!r}"
     
-class Challenge(Base):
+class Challenge(db.Model):
     __tablename__ = "challenges"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -101,7 +102,7 @@ class Challenge(Base):
         return f"Challenge(id={self.id!r}, challenge_name={self.name!r}, challenge_creator={self.challenge_creator!r})"
     
     
-class TrainingSession(Base):
+class TrainingSession(db.Model):
     __tablename__ = "training_sessions"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -117,7 +118,7 @@ class TrainingSession(Base):
     def __repr__(self) -> str:
         return f"TrainingSession(user_id={self.user_id!r}, training_id={self.training_id!r})"
 
-class Block(Base): # TODO: make this a view
+class Block(db.Model): # TODO: make this a view
     __tablename__ = "blocks"
      
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -130,7 +131,7 @@ class Block(Base): # TODO: make this a view
     def __repr__(self) -> str:
         return f"Block(id={self.id!r}, name={self.name!r}"
 
-class ProgressScore(Base): # TODO: make this a view
+class ProgressScore(db.Model): # TODO: make this a view
     __tablename__ = "progress_scores"
      
     id: Mapped[int] = mapped_column(primary_key=True)
