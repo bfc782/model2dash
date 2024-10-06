@@ -4,8 +4,11 @@ from dash import Dash, dcc, html, callback, Output, Input, State, \
 import datetime
 import dash_bootstrap_components as dbc
 from .extensions import db
+from .callbacks import get_component_callbacks, get_col_type
+from .components import ModelComponents
 
 # %%
+
 def result_to_dict_list_with_headers(query_result):
     """
     Converts a list of SQLAlchemy ORM instances to a list of dictionaries
@@ -32,7 +35,7 @@ def result_to_dict_list_with_headers(query_result):
     return dash_table_columns, rows
 
 # %%
-class ModelComponents:
+# class ModelComponents:
     # component_dict = {}
     def __init__(self, db, model_tbl):
         self.model_tbl = model_tbl
@@ -47,10 +50,10 @@ class ModelComponents:
                 columns=[{'id':c, 'name':c} for c in self.model_tbl[tbl]['cols']],
             ))
 
-    def get_col_type(self, tbl, col):
-        table = self.db.Model.metadata.tables[tbl]
-        column = table.columns[col]
-        return str(column.type)
+    # def get_col_type(self, tbl, col):
+    #     table = self.db.Model.metadata.tables[tbl]
+    #     column = table.columns[col]
+    #     return str(column.type)
 
     def get_input_component(self, tbl, col):
         col_type = self.get_col_type(tbl, col)
@@ -153,7 +156,8 @@ class ModelComponents:
 # %%
 def create_dash_app(flask_app, tbl_cls_cols):
     model_components = ModelComponents(db, tbl_cls_cols)
-    callbacks = model_components.get_component_callbacks()
+    # callbacks = model_components.get_component_callbacks()
+    callbacks = get_component_callbacks(db, tbl_cls_cols)
 
     dash_app = Dash(__name__,
                     server=flask_app,
