@@ -4,8 +4,6 @@ import datetime
 
 '''
 self.model_tbl: tbl_cls_cols dict 
-
-
 '''
 
 def get_col_type(db, tbl, col):
@@ -52,7 +50,7 @@ def create_table_callback(db, model_tbl, tbl_name):
             Input('dummy-div', 'children')
         )
         def get_data(_):
-            return fetch_data(db, model_tbl,  tbl_name)
+            return fetch_data(db, model_tbl, tbl_name)
 
 
 def get_component_callbacks(db, tbl_cls_cols):

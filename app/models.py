@@ -2,9 +2,8 @@ import datetime
 from sqlalchemy import create_engine, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
-# class Base(DeclarativeBase):
-#     pass
 from app import db
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -14,7 +13,8 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, user_name={self.user_name!r})"
-    
+
+
 class Team(db.Model):
     __tablename__ = "teams"
      
@@ -28,7 +28,6 @@ class Team(db.Model):
     def __repr__(self) -> str:
         return f"Team(id={self.id!r}, team_name={self.team_name!r}, creator_id={self.creator_id!r})"
 
-### Rest of models
 
 class Roster(db.Model): # userteamlink
     __tablename__ = "rosters"
@@ -59,6 +58,7 @@ class Target(db.Model):
     def __repr__(self) -> str:
         return f"Target(user_id={self.user_id!r}, event_id={self.event_id!r}, training_id={self.training_id!r})"
 
+
 class Event(db.Model):
     __tablename__ = "events"
 
@@ -83,7 +83,8 @@ class Training(db.Model):
 
     def __repr__(self) -> str:
         return f"Training(id={self.id!r}, name={self.activity!r}"
-    
+
+
 class Challenge(db.Model):
     __tablename__ = "challenges"
      
@@ -118,6 +119,7 @@ class TrainingSession(db.Model):
     def __repr__(self) -> str:
         return f"TrainingSession(user_id={self.user_id!r}, training_id={self.training_id!r})"
 
+
 class Block(db.Model): # TODO: make this a view
     __tablename__ = "blocks"
      
@@ -131,6 +133,7 @@ class Block(db.Model): # TODO: make this a view
     def __repr__(self) -> str:
         return f"Block(id={self.id!r}, name={self.name!r}"
 
+
 class ProgressScore(db.Model): # TODO: make this a view
     __tablename__ = "progress_scores"
      
@@ -142,7 +145,6 @@ class ProgressScore(db.Model): # TODO: make this a view
     team_block_training_count: Mapped[int] # in training sessions
     user_total_training_count: Mapped[int] # in training sessions
     team_total_training_count: Mapped[int] # in training sessions
-
 
     def __repr__(self) -> str:
         return f"ProgressScore(user_id={self.user_id!r}, challenge_id={self.challenge_id!r})"
