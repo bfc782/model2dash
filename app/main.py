@@ -10,7 +10,6 @@ from .components import ModelComponents
 # %%
 def create_dash_app(flask_app, tbl_cls_cols):
     model_components = ModelComponents(db, tbl_cls_cols)
-    # callbacks = model_components.get_component_callbacks()
     callbacks = get_component_callbacks(db, tbl_cls_cols)
 
     dash_app = Dash(__name__,

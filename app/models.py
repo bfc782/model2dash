@@ -1,8 +1,10 @@
 import datetime
+from flask import url_for
 from sqlalchemy import create_engine, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 
 from app import db
+from app.exceptions import ValidationError
 
 
 class User(db.Model):
@@ -13,6 +15,21 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, user_name={self.user_name!r})"
+    
+    def to_json(self):
+        json_user = {
+            # 'url': url_for('api.get_users', id=self.id),
+            'id': self.id,
+            'user_name': self.user_name
+        }
+        return json_user
+    
+    @staticmethod
+    def from_json(json_user):
+        user_name = json_user.get('user_name')
+        if user_name is None or user_name == '':
+            raise ValidationError('user does not have a user name')
+        return User(json_user)
 
 
 class Team(db.Model):

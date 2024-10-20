@@ -1,10 +1,9 @@
 from dash import callback, no_update, State, Input, Output, ctx
 import dash_bootstrap_components as dbc
 import datetime
+from flask import url_for
+import requests
 
-'''
-self.model_tbl: tbl_cls_cols dict 
-'''
 
 def get_col_type(db, tbl, col):
         table = db.Model.metadata.tables[tbl]
@@ -13,9 +12,17 @@ def get_col_type(db, tbl, col):
 
 
 def fetch_data(db, model_tbl, tbl):
-        res = db.session.query(model_tbl[tbl]['object']).all()
-        _, data = result_to_dict_list_with_headers(res)
-        return data
+        if tbl == 'users':
+            url = url_for('api.get_users', _external=True)
+            # res = requests.get('http://127.0.0.1:5000/api/v1/users')
+            res = requests.get(url)
+            data_json = res.json()
+            data = data_json[tbl]
+            return data# [{'id': 999, 'user_name': 'Ben'}]
+        else:
+            res = db.session.query(model_tbl[tbl]['object']).all()
+            _, data = result_to_dict_list_with_headers(res)
+            return data
 
 
 def result_to_dict_list_with_headers(query_result):
@@ -96,13 +103,18 @@ def get_component_callbacks(db, tbl_cls_cols):
                 tbl_obj = tbl_cls_cols[input_tbl]['object']
                 tbl_cols_k_v = {tbl_cls_cols[input_tbl]['cols'][ix]:inputs[ix] 
                                 for ix, _ in enumerate(inputs)}
-                db.session.add(
-                    tbl_obj(
-                        **tbl_cols_k_v   
-                    ) 
-                )
-                db.session.commit()
-                return dbc.Alert(f"did this work? {input_tbl, inputs_txt, tbl_obj, tbl_cols_k_v}"), ''
+                
+                if input_tbl == 'users':
+                    
+                    return dbc.Alert(f"Nothing for users yet"), ''
+                else:
+                    db.session.add(
+                        tbl_obj(
+                            **tbl_cols_k_v   
+                        ) 
+                    )
+                    db.session.commit()
+                    return dbc.Alert(f"did this work? {input_tbl, inputs_txt, tbl_obj, tbl_cols_k_v}"), ''
             else:
                 no_update
         
