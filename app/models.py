@@ -2,6 +2,7 @@ import datetime
 from flask import url_for
 from sqlalchemy import create_engine, String, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+#TODO: check if flask-sqlalchemy works better to initialiase models without custom init 
 
 from app import db
 from app.exceptions import ValidationError
@@ -13,12 +14,15 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_name: Mapped[str] = mapped_column(String(30))
 
+    def __init__(self, id, user_name):  # I needed to add this
+        self.id = id
+        self.user_name = user_name
+
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, user_name={self.user_name!r})"
     
     def to_json(self):
         json_user = {
-            # 'url': url_for('api.get_users', id=self.id),
             'id': self.id,
             'user_name': self.user_name
         }
@@ -26,10 +30,12 @@ class User(db.Model):
     
     @staticmethod
     def from_json(json_user):
+        print("inside model User static method")
+        id = json_user.get('id')
         user_name = json_user.get('user_name')
         if user_name is None or user_name == '':
             raise ValidationError('user does not have a user name')
-        return User(json_user)
+        return User(id=id, user_name=user_name)
 
 
 class Team(db.Model):

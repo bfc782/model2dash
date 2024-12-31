@@ -14,11 +14,14 @@ def get_users():
     return jsonify({ 'users': [user.to_json() for user in users] })
 
 @api.route('/users/', methods=['POST'])
-# @permission_required(Permission.WRITE)
-def new_user():
-    new_user = User.from_json(request.json)
-    # new_user.author = g.current_user
+
+def registration():
+    data = request.get_json()
+    new_user_id = data.get('user_id')
+    new_user_name = data.get('user_name')
+
+    new_user = User(new_user_id, new_user_name)
+
     db.session.add(new_user)
     db.session.commit()
-    return jsonify(new_user.to_json()), 201, \
-        {'Location': url_for('api.get_user', id=new_user.id)}
+    return jsonify(new_user.to_json())

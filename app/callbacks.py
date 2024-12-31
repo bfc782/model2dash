@@ -1,7 +1,7 @@
 from dash import callback, no_update, State, Input, Output, ctx
 import dash_bootstrap_components as dbc
 import datetime
-from flask import url_for
+from flask import url_for, jsonify
 import requests
 
 
@@ -18,7 +18,7 @@ def fetch_data(db, model_tbl, tbl):
             res = requests.get(url)
             data_json = res.json()
             data = data_json[tbl]
-            return data# [{'id': 999, 'user_name': 'Ben'}]
+            return data
         else:
             res = db.session.query(model_tbl[tbl]['object']).all()
             _, data = result_to_dict_list_with_headers(res)
@@ -88,7 +88,6 @@ def get_component_callbacks(db, tbl_cls_cols):
             - db is updated return success alert, table
             - db inputs are invalid return exception to alert
             - db server is unavailable return exception to alert
-            - 
             '''
 
             inputs_txt = ", ".join([i if i else "" "" for i in inputs])
@@ -105,8 +104,17 @@ def get_component_callbacks(db, tbl_cls_cols):
                                 for ix, _ in enumerate(inputs)}
                 
                 if input_tbl == 'users':
-                    
-                    return dbc.Alert(f"Nothing for users yet"), ''
+                    # print(tbl_cols_k_v, type(tbl_cols_k_v))
+                    url = url_for('api.registration', _external=True)
+                    data = tbl_cols_k_v
+                    print(type(data), ":", data)
+                    print(url)
+
+                    response = requests.post(url=url, json=data)
+                    if response.status_code == 200:
+                        return dbc.Alert(f"Registration successful: {response.status_code}"), ''
+                    else:
+                         return dbc.Alert(f"Registration failed: {response.status_code}"), ''
                 else:
                     db.session.add(
                         tbl_obj(
