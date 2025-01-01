@@ -14,7 +14,6 @@ def get_users():
     return jsonify({ 'users': [user.to_json() for user in users] })
 
 @api.route('/users/', methods=['POST'])
-
 def registration():
     data = request.get_json()
     new_user_id = data.get('user_id')

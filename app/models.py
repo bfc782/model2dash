@@ -55,7 +55,7 @@ class Team(db.Model):
 class Roster(db.Model): # userteamlink
     __tablename__ = "rosters"
      
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)  # Superfluous
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user_status: Mapped[str] = mapped_column(String(30)) # Invited, Confirmed, Rejected, Left, Inactive
@@ -70,7 +70,7 @@ class Target(db.Model):
      
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
+    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))  # This is superfluous
     event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
     training_id: Mapped[int] = mapped_column(ForeignKey("trainings.id"))
     target_event_result: Mapped[int] # in minutes

@@ -3,7 +3,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 app_name = basedir.split('/')[-2]
 
-MODELS_TO_LOAD = ['User', 'Team']
+MODELS_TO_LOAD = ['User', 'Team', 'Roster']
 
 
 class Config:

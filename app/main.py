@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 from .extensions import db
 from .callbacks import get_component_callbacks, get_col_type
 from .components import ModelComponents
+from .layout import serve_layout
 
 # %%
 def create_dash_app(flask_app, tbl_cls_cols):
@@ -19,20 +20,6 @@ def create_dash_app(flask_app, tbl_cls_cols):
                     external_stylesheets=[dbc.themes.JOURNAL]
             )
 
-    def serve_layout():
-        return html.Div(
-                        [
-                            html.Div(id='dummy-div', children=[], hidden=True),
-                            html.Div(id="alert"),
-                            dbc.Tab(
-
-                            )]
-                        + 
-                        [getattr(model_components, f'{tbl}{comp}')
-                            for tbl in tbl_cls_cols for comp in ['_btn', '_modal', '_table']
-                        ]
-                    ) 
-
-    dash_app.layout = serve_layout
+    dash_app.layout = serve_layout(model_components, tbl_cls_cols)
 
     return dash_app
