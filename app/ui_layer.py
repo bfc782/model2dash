@@ -6,5 +6,11 @@
 tbl_to_layout_comps = {
     'users': ['_btn', '_modal'],
     'teams': ['_btn', '_modal', '_table'],
-    'rosters': []
+    'rosters': ['_btn', '_modal'],
+    'targets': ['_btn', '_modal'],
+    'events': ['_btn', '_modal'],
+}
+
+tbl_to_ui_cols = {
+    'users': ['user_name']
 }

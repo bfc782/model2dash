@@ -3,7 +3,9 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 app_name = basedir.split('/')[-2]
 
-MODELS_TO_LOAD = ['User', 'Team', 'Roster']
+# TODO: dev config with view to select tables, cols and components
+
+MODELS_TO_LOAD = ['User', 'Team', 'Roster', 'Target', 'Event']
 
 
 class Config:
