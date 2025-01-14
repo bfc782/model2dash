@@ -24,3 +24,9 @@ def registration():
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.to_json())
+
+@api.route('/teams/')
+def get_teams():
+    teams = Team.query.all()
+    return jsonify({ 'teams': [team.to_json() for team in teams] })
+

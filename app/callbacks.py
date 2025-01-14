@@ -12,8 +12,8 @@ def get_col_type(db, tbl, col):
 
 
 def fetch_data(db, model_tbl, tbl):
-        if tbl == 'users':
-            url = url_for('api.get_users', _external=True)
+        if tbl in ['users', 'teams']:
+            url = url_for(f'api.get_{tbl}', _external=True)
             # res = requests.get('http://127.0.0.1:5000/api/v1/users')
             res = requests.get(url)
             data_json = res.json()

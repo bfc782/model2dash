@@ -30,7 +30,7 @@ class User(db.Model):
     
     @staticmethod
     def from_json(json_user):
-        print("inside model User static method")
+        # print("inside model User static method")
         id = json_user.get('id')
         user_name = json_user.get('user_name')
         if user_name is None or user_name == '':
@@ -48,8 +48,27 @@ class Team(db.Model):
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     created_date: Mapped[datetime.date]
 
+    def __init__(self, id, team_name, max_size, min_size, creator_id, created_date):  # I needed to add this
+        self.id = id
+        self.team_name = team_name
+        self.max_size = max_size
+        self.min_size = min_size
+        self.creator_id = creator_id
+        self.created_date = created_date
+
     def __repr__(self) -> str:
         return f"Team(id={self.id!r}, team_name={self.team_name!r}, creator_id={self.creator_id!r})"
+
+    def to_json(self):
+        json_team = {
+            'id': self.id,
+            'team_name': self.team_name,
+            'max_size': self.max_size,
+            'min_size': self.min_size,
+            'creator_id': self.creator_id,
+            'created_date': self.created_date,
+        }
+        return json_team
 
 
 class Roster(db.Model): # userteamlink
