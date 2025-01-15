@@ -5,7 +5,7 @@ app_name = basedir.split('/')[-2]
 
 # TODO: dev config with view to select tables, cols and components
 
-MODELS_TO_LOAD = ['User', 'Team', 'Roster', 'Target', 'Event']
+MODELS_TO_LOAD = ['User', 'Team', 'Roster', 'Target', 'Event', 'Training', 'Challenge', 'TrainingSession']
 
 
 class Config:

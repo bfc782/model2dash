@@ -14,7 +14,7 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_name: Mapped[str] = mapped_column(String(30))
 
-    def __init__(self, id, user_name):  # I needed to add this
+    def __init__(self, id, user_name):  # I needed to add this for api
         self.id = id
         self.user_name = user_name
 
@@ -48,7 +48,7 @@ class Team(db.Model):
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     created_date: Mapped[datetime.date]
 
-    def __init__(self, id, team_name, max_size, min_size, creator_id, created_date):  # I needed to add this
+    def __init__(self, id, team_name, max_size, min_size, creator_id, created_date):  # I needed to add this for api
         self.id = id
         self.team_name = team_name
         self.max_size = max_size
