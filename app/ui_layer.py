@@ -4,14 +4,14 @@
 # config MODELS_TO_LOAD = ['User', 'Team', 'Roster', 'Target', 'Event', 'Training', 'Challenge', 'TrainingSession']
 
 tbl_to_layout_comps = {
-    'users': ['_btn', '_modal'],
+    'users': ['_btn', '_modal', '_table'],
     'teams': ['_btn', '_modal', '_table'],
-    'rosters': ['_btn', '_modal'],
-    'targets': ['_btn', '_modal'],
-    'events': ['_btn', '_modal'],
-    'trainings': [],
-    'challenges': [],
-    'training_sessions': []
+    'rosters': ['_btn', '_modal', '_table'],
+    'targets': ['_btn', '_modal', '_table'],
+    'events': ['_btn', '_modal', '_table'],
+    'trainings': ['_btn', '_modal', '_table'],
+    'challenges': ['_btn', '_modal', '_table'],
+    'training_sessions': ['_btn', '_modal', '_table'],
 }
 
 tbl_to_ui_cols = {

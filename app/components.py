@@ -10,7 +10,7 @@ class ModelComponents:
         self.db = db
 
         for ix, tbl in enumerate(model_tbl):
-            setattr(self, f'{tbl}_btn', dbc.Button(tbl, id=f'{tbl}-btn'))
+            setattr(self, f'{tbl}_btn', dbc.Button(f'add {tbl[:-1]}', id=f'{tbl}-btn'))
             setattr(self, f'{tbl}_modal', dbc.Modal(self.make_form(tbl, self.model_tbl[tbl]['cols']), 
                                                             id=f'{tbl}-modal'))
             setattr(self, f'{tbl}_table', dash_table.DataTable(
