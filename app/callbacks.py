@@ -1,4 +1,4 @@
-from dash import callback, no_update, State, Input, Output, ctx
+from dash import callback, no_update, State, Input, Output, ctx, dcc
 import dash_bootstrap_components as dbc
 import datetime
 from flask import url_for, jsonify
@@ -54,10 +54,14 @@ def result_to_dict_list_with_headers(query_result):
 def create_table_callback(db, model_tbl, tbl_name):
         @callback(
             Output(f'{tbl_name}-table', 'data'),
-            Input('dummy-div', 'children')
+            Input('dummy-div', 'children'),
+            Input('url', 'pathname')
         )
-        def get_data(_):
-            return fetch_data(db, model_tbl, tbl_name)
+        def get_data(_, a):
+            print(a)
+            if a == '/admin':
+                return fetch_data(db, model_tbl, tbl_name)
+            return no_update
 
 
 def get_component_callbacks(db, tbl_cls_cols):
