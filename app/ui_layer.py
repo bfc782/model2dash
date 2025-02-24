@@ -12,6 +12,7 @@ tbl_to_layout_comps = {
     'trainings': ['_btn', '_modal', '_table'],
     'challenges': ['_btn', '_modal', '_table'],
     'training_sessions': ['_btn', '_modal', '_table'],
+    'progress_scores': ['_table'],
 }
 
 tbl_to_ui_cols = {

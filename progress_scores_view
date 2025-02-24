@@ -1,0 +1,227 @@
+Last login: Mon Feb 17 05:20:14 on ttys010
+You have mail.
+bcook@Bs-MacBook-Pro ~ % /Applications/Postgres.app/Contents/Versions/14/bin/psql -p5432 "intendif"
+psql (14.2)
+Type "help" for help.
+
+intendif=# \dt
+               List of relations
+ Schema |       Name        | Type  |  Owner   
+--------+-------------------+-------+----------
+ public | blocks            | table | postgres
+ public | challenges        | table | postgres
+ public | events            | table | postgres
+ public | progress_scores   | table | postgres
+ public | rosters           | table | postgres
+ public | targets           | table | postgres
+ public | teams             | table | postgres
+ public | training_sessions | table | postgres
+ public | trainings         | table | postgres
+ public | users             | table | postgres
+(10 rows)
+
+intendif=# select * from users;
+ id | user_name 
+----+-----------
+  1 | Ben
+  2 | Ol
+  3 | flo
+  4 | body
+(4 rows)
+
+intendif=# select * from progress_scores;
+ id | user_id | challenge_id | block_id | user_block_training_count | team_block_training_count | user_total_training_count | team_total_training_count 
+----+---------+--------------+----------+---------------------------+---------------------------+---------------------------+---------------------------
+(0 rows)
+
+intendif=# select * from teams;
+ id | team_name | max_size | min_size | creator_id | created_date 
+----+-----------+----------+----------+------------+--------------
+  1 | bens team |        4 |        8 |          1 | 2024-10-02
+(1 row)
+
+intendif=# select * from users;
+ id | user_name 
+----+-----------
+  1 | Ben
+  2 | Ol
+  3 | flo
+  4 | body
+(4 rows)
+
+intendif=# select * from rosters;
+ id | team_id | user_id | user_status | user_role 
+----+---------+---------+-------------+-----------
+(0 rows)
+
+intendif=# select tesm_name, user_name from users join rosters on users.id = rosters.user_id;
+ERROR:  column "tesm_name" does not exist
+LINE 1: select tesm_name, user_name from users join rosters on users...
+               ^
+intendif=# select team_name, user_name from users join rosters on users.id = rosters.user_id;
+ERROR:  column "team_name" does not exist
+LINE 1: select team_name, user_name from users join rosters on users...
+               ^
+intendif=# select team_id, user_name from users join rosters on users.id = rosters.user_id;
+ team_id | user_name 
+---------+-----------
+(0 rows)
+
+intendif=# insert 1, 1, 1, 'active', 'owner' into rosters;
+ERROR:  syntax error at or near "1"
+LINE 1: insert 1, 1, 1, 'active', 'owner' into rosters;
+               ^
+intendif=# insert values(1, 1, 1, 'active', 'owner') into rosters;
+ERROR:  syntax error at or near "values"
+LINE 1: insert values(1, 1, 1, 'active', 'owner') into rosters;
+               ^
+intendif=# insert into rosters values(1, 1, 1, 'active', 'owner');
+INSERT 0 1
+intendif=# select * from rosters;
+ id | team_id | user_id | user_status | user_role 
+----+---------+---------+-------------+-----------
+  1 |       1 |       1 | active      | owner
+(1 row)
+
+intendif=# select team_id, user_name from users join rosters on users.id = rosters.user_id;
+ team_id | user_name 
+---------+-----------
+       1 | Ben
+(1 row)
+
+intendif=# select team_id, user_name from users join rosters on users.id = rosters.user_id;
+ team_id | user_name 
+---------+-----------
+       1 | Ben
+(1 row)
+
+intendif=# select team_id, user_name from users join rosters on users.id = rosters.user_id;
+ team_id | user_name 
+---------+-----------
+       1 | Ben
+(1 row)
+
+intendif=# select team_name, user_name from users join rosters on users.id = rosters.user_id join teams on teams.id = rosters.team_id
+intendif-# ;
+ team_name | user_name 
+-----------+-----------
+ bens team | Ben
+(1 row)
+
+intendif=# insert into rosters values(1, 1, 2, 'active', 'participant');
+ERROR:  duplicate key value violates unique constraint "rosters_pkey"
+DETAIL:  Key (id)=(1) already exists.
+intendif=# insert into rosters values(2, 1, 2, 'active', 'participant');
+INSERT 0 1
+intendif=# insert into rosters values(3, 1, 3, 'active', 'participant');
+INSERT 0 1
+intendif=# select team_name, user_name from users join rosters on users.id = rosters.user_id join teams on teams.id = rosters.team_id                                                                                                                       ;
+ team_name | user_name 
+-----------+-----------
+ bens team | Ben
+ bens team | Ol
+ bens team | flo
+(3 rows)
+
+intendif=# select * from training_sessions
+intendif-# ;
+ id | user_id | team_id | challenge_id | training_id | block_id | completion_date | upload_timestamp | url 
+----+---------+---------+--------------+-------------+----------+-----------------+------------------+-----
+(0 rows)
+
+intendif=# \dt
+               List of relations
+ Schema |       Name        | Type  |  Owner   
+--------+-------------------+-------+----------
+ public | blocks            | table | postgres
+ public | challenges        | table | postgres
+ public | events            | table | postgres
+ public | progress_scores   | table | postgres
+ public | rosters           | table | postgres
+ public | targets           | table | postgres
+ public | teams             | table | postgres
+ public | training_sessions | table | postgres
+ public | trainings         | table | postgres
+ public | users             | table | postgres
+(10 rows)
+
+intendif=# select * from blocks;
+ id | name | challenge_id | block_number | block_start_date | block_end_date 
+----+------+--------------+--------------+------------------+----------------
+(0 rows)
+
+intendif=# insert into blocks values(1, 'block1', 1, 1, '', ''))
+intendif-# ;
+ERROR:  syntax error at or near ")"
+LINE 1: insert into blocks values(1, 'block1', 1, 1, '', ''))
+                                                            ^
+intendif=# insert into blocks values(1, 'block1', 1, 1, '', '');                                                              ;
+ERROR:  invalid input syntax for type date: ""
+LINE 1: insert into blocks values(1, 'block1', 1, 1, '', '');
+                                                     ^
+intendif=# insert into blocks values(1, 'block1', 1, 1, '2025-01-01', '2025-02-17');                                          ;
+INSERT 0 1
+intendif=# select * from progress_scores;
+ id | user_id | challenge_id | block_id | user_block_training_count | team_block_training_count | user_total_training_count | team_total_training_count 
+----+---------+--------------+----------+---------------------------+---------------------------+---------------------------+---------------------------
+(0 rows)
+
+intendif=# create view progress_scores as 
+intendif-# select id as id, challenges.id, blocks.id, 
+intendif-# ;
+ERROR:  syntax error at or near ";"
+LINE 3: ;
+        ^
+intendif=# select * from blocks;
+ id |  name  | challenge_id | block_number | block_start_date | block_end_date 
+----+--------+--------------+--------------+------------------+----------------
+  1 | block1 |            1 |            1 | 2025-01-01       | 2025-02-17
+(1 row)
+
+intendif=# select * from training_sessions;
+ id | user_id | team_id | challenge_id | training_id | block_id | completion_date | upload_timestamp | url 
+----+---------+---------+--------------+-------------+----------+-----------------+------------------+-----
+  1 |       1 |       1 |            1 |           1 |        1 | 2025-02-17      | 2025-02-17       | abc
+(1 row)
+
+intendif=# create view progress_scores as                                                                                     select max(blocks.id), challenges.id, blocks.id, count(*), count(*), count(*), count(*)                                       ;
+ERROR:  missing FROM-clause entry for table "blocks"
+LINE 2: select max(blocks.id), challenges.id, blocks.id, count(*), c...
+                   ^
+intendif=# create view progress_scores as                                                                                     select max(blocks.id), challenges.id, blocks.id, count(*), count(*), count(*), count(*)                                       from blocks, challenges;
+ERROR:  column "challenges.id" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 2: select max(blocks.id), challenges.id, blocks.id, count(*), c...
+                               ^
+intendif=# create view progress_scores as                                                                                     select max(blocks.id), challenges.id, blocks.id, count(*), count(*), count(*), count(*)                                       from blocks, challenges
+intendif-# group by 1, challenges.id, blocks.id;
+ERROR:  aggregate functions are not allowed in GROUP BY
+LINE 2: select max(blocks.id), challenges.id, blocks.id, count(*), c...
+               ^
+intendif=# create view progress_scores as                                                                                     select blocks.id, users.id, challenges.id, blocks.id, blocks.user_id,  count(*), count(*), count(*), count(*)                 from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id, blocks.id, blocks.user_id;
+ERROR:  column blocks.user_id does not exist
+LINE 2: ...ct blocks.id, users.id, challenges.id, blocks.id, blocks.use...
+                                                             ^
+intendif=# create view progress_scores as                                                                                     select blocks.id, users.id, challenges.id, blocks.id, count(*), count(*), count(*), count(*)                                  from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id, blocks.id;
+ERROR:  column "id" specified more than once
+intendif=# create view progress_scores as                                                                                     select blocks.id as block_id, users.id as user_id, challenges.id as chall_id, blocks.id as block_id, count(*), count(*), count(*), count(*)                                                                                                                 from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id, blocks.id;
+ERROR:  column "block_id" specified more than once
+intendif=# create view progress_scores as                                                                                     select blocks.id as block_id, users.id as user_id, challenges.id as chall_id, max(blocks.id) as latest_block, count(*), count(*), count(*), count(*)                                                                                                        from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id;
+ERROR:  column "count" specified more than once
+intendif=# create view progress_scores as                                                                                     select blocks.id as block_id, users.id as user_id, challenges.id as chall_id, max(blocks.id) as latest_block, count(*), count(*) as usr_blk_cnt, count(*) as team_blk_cnt, count(*)                                                                         from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id;
+ERROR:  column "count" specified more than once
+intendif=# create view progress_scores as                                                                                     select blocks.id as block_id, users.id as user_id, challenges.id as chall_id, max(blocks.id) as latest_block, count(*) as usr_blk_cnt, count(*) as team_blk_cnt, count(*)                                                                                   from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id;
+ERROR:  relation "progress_scores" already exists
+intendif=# drop table progress_scores;
+DROP TABLE
+intendif=# create view progress_scores as                                                                                     select blocks.id as block_id, users.id as user_id, challenges.id as chall_id, max(blocks.id) as latest_block, count(*) as usr_blk_cnt, count(*) as team_blk_cnt, count(*)                                                                                   from blocks, users, challenges                                                                                                group by blocks.id, users.id, challenges.id;
+CREATE VIEW
+intendif=# select * from progress_scores;
+ block_id | user_id | chall_id | latest_block | usr_blk_cnt | team_blk_cnt | count 
+----------+---------+----------+--------------+-------------+--------------+-------
+        1 |       4 |        1 |            1 |           1 |            1 |     1
+        1 |       2 |        1 |            1 |           1 |            1 |     1
+        1 |       1 |        1 |            1 |           1 |            1 |     1
+        1 |       3 |        1 |            1 |           1 |            1 |     1
+(4 rows)
+
+intendif=# 

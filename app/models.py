@@ -14,7 +14,7 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_name: Mapped[str] = mapped_column(String(30))
 
-    def __init__(self, id, user_name):  # I needed to add this for api
+    def __init__(self, id, user_name):  # I needed to add this for api... however, flask shell might not like it
         self.id = id
         self.user_name = user_name
 
@@ -178,8 +178,11 @@ class Block(db.Model): # TODO: make this a view
 
 class ProgressScore(db.Model): # TODO: make this a view
     __tablename__ = "progress_scores"
+    # __table_args__ = {'autoload_with': db.engine}
+
+    id = db.Column(db.Integer, primary_key=True)
      
-    id: Mapped[int] = mapped_column(primary_key=True)
+    # id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"))
     block_id: Mapped[int] = mapped_column(ForeignKey("blocks.id"))
