@@ -7,6 +7,16 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 from app import db
 from app.exceptions import ValidationError
 
+from . import login_manager
+
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return User.query.get(int(user_id))
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 class User(db.Model):
     __tablename__ = "users"

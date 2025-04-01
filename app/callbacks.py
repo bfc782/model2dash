@@ -58,10 +58,7 @@ def create_table_callback(db, model_tbl, tbl_name):
             Input('url', 'pathname')
         )
         def get_data(_, a):
-            print(a)
-            if a == '/admin':
-                return fetch_data(db, model_tbl, tbl_name)
-            return no_update
+            return fetch_data(db, model_tbl, tbl_name)
 
 
 def get_component_callbacks(db, tbl_cls_cols):

@@ -10,12 +10,13 @@ from .layout import serve_layout
 
 # %%
 def create_dash_app(flask_app, tbl_cls_cols):
+
     model_components = ModelComponents(db, tbl_cls_cols)
     callbacks = get_component_callbacks(db, tbl_cls_cols)
 
     dash_app = Dash(__name__,
                     server=flask_app,
-                    # url_base_pathname='/dash/', 
+                    url_base_pathname='/dash/', 
                     suppress_callback_exceptions=True,
                     external_stylesheets=[dbc.themes.JOURNAL]
             )
