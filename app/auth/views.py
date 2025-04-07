@@ -8,6 +8,8 @@ from .forms import LoginForm, RegistrationForm
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    return render_template('auth/login.html', form=form)
+
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first
         if user is not None and user.verify_password(form.password):

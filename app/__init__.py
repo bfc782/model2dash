@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from .main_dash import create_dash_app
 # from flask_mail import Mail
 # from flask_moment import Moment
@@ -8,6 +9,7 @@ from config import config
 # mail = Mail()
 # moment = Moment()
 # db = SQLAlchemy()
+bootstrap = Bootstrap()
 
 from flask_login import LoginManager
 login_manager = LoginManager()
@@ -26,7 +28,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-
+    bootstrap.init_app(app)
     # mail.init_app(app)
     # moment.init_app(app)
     db.init_app(app)
